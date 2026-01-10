@@ -10,9 +10,9 @@ This is a decentralized application (DApp) that allows users to purchase Cookie 
 
 ## Setup Instructions
 
-### 1. Deploy the Smart Contract
+### 1. Deploy the Smart Contract (การติดตั้ง Smart Contract)
 
-You need to deploy the `CharacterShop.sol` contract to an Ethereum Testnet. The easiest way is using [Remix IDE](https://remix.ethereum.org/).
+You need to deploy the `CharacterShop.sol` contract to an Ethereum Testnet. (คุณต้องติดตั้งสัญญา `CharacterShop.sol` ลงบน Ethereum Testnet)
 
 1.  Go to [Remix IDE](https://remix.ethereum.org/).
 2.  Create a new file `CharacterShop.sol` and paste the content of the `CharacterShop.sol` file from this project.
@@ -21,9 +21,10 @@ You need to deploy the `CharacterShop.sol` contract to an Ethereum Testnet. The 
 5.  Select "Injected Provider - MetaMask" as the Environment.
 6.  Click "Deploy".
 7.  Confirm the transaction in MetaMask.
-8.  Once deployed, copy the **Contract Address** (from the "Deployed Contracts" section).
+8.  **Once deployed, look at the bottom left under "Deployed Contracts". Click the "Copy" icon next to the contract name to get your Contract Address.**
+    **(เมื่อติดตั้งเสร็จแล้ว ให้ดูที่แถบซ้ายล่างหัวข้อ "Deployed Contracts" กดไอคอนรูปกระดาษซ้อนกันเพื่อคัดลอก Contract Address)**
 
-### 2. Configure the Frontend
+### 2. Configure the Frontend (การตั้งค่าหน้าเว็บ)
 
 1.  Open `app.js` in a text editor.
 2.  Find the line:
@@ -31,8 +32,9 @@ You need to deploy the `CharacterShop.sol` contract to an Ethereum Testnet. The 
     const CONTRACT_ADDRESS = "YOUR_CONTRACT_ADDRESS_HERE";
     ```
 3.  Replace `"YOUR_CONTRACT_ADDRESS_HERE"` with your actual deployed contract address.
+    **(นำ Contract Address ที่ก๊อปมาวางแทนที่คำว่า "YOUR_CONTRACT_ADDRESS_HERE")**
     ```javascript
-    const CONTRACT_ADDRESS = "0x1234..."; // Your address here
+    const CONTRACT_ADDRESS = "0x1234..."; // Example address
     ```
 4.  Save the file.
 
