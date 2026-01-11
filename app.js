@@ -1,6 +1,6 @@
 import { ethers } from "https://cdnjs.cloudflare.com/ajax/libs/ethers/6.15.0/ethers.min.js";
 
-const CONTRACT_ADDRESS = "0x2c4976737d475dc16e13973b737b7B5A6f2cb602"; // ใส่ที่อยู่สัญญาของคุณ
+const CONTRACT_ADDRESS = "0xeF009018F4bAAbC121deFAd770E2E2990b751036"; // ใส่ที่อยู่สัญญาของคุณ
 
 const CONTRACT_ABI = [
     "function buyCharacter(uint256 _characterId) public payable",
@@ -10,22 +10,22 @@ const CONTRACT_ABI = [
 
 const characters = [
 
-    { id: 0, name: "GingerBrave", price: "0.001", image: "Cookie_gingerbrave_card.webp", rarity: "Common" },
-    { id: 1, name: "Pancake Cookie", price: "0.003", image: "PancakeCookie.jpg", rarity: "Epic" },
-    { id: 2, name: "Matcha Cookie", price: "0.003", image: "MatchaCookie.jpg", rarity: "Epic" },
-    { id: 3, name: "Strawberry Crepe Cookie", price: "0.003", image: "StrawberryCrepeCookie.jpg", rarity: "Epic" },
-    { id: 4, name: "Sugar Swan Cookie", price: "0.002", image: "SugarSwanCookie.jpg", rarity: "Legendary" },
-    { id: 5, name: "Blue Slushy Cookie", price: "0.003", image: "BlueSlushyCookie.jpg", rarity: "Epic" },
-    { id: 6, name: "Fire Spirit Cookie", price: "0.002", image: "FireSpiritCookie.jpg", rarity: "Legendary" },
-    { id: 7, name: "Dreamweaver Cookie", price: "0.002", image: "DreamweaverCookie.jpg", rarity: "Legendary" },
-    { id: 8, name: "Beet Cookie", price: "0.003", image: "BeetCookie.jpg", rarity: "Epic" },
-    { id: 9, name: "Wind Archer Cookie", price: "0.002", image: "WindArcherCookie.jpg", rarity: "Legendary" },
-    { id: 10, name: "Butterbear Cookie", price: "0.003", image: "ButterbearCookie.jpg", rarity: "Epic" },
-    { id: 11, name: "Angel Cookie", price: "0.002", image: "AngelCookie.jpg", rarity: "Rare" },
-    { id: 12, name: "Poison Mushroom Cookie", price: "0.003", image: "PoisonMushroomCookie.jpg", rarity: "Epic" },
-    { id: 13, name: "Dreamjelly Cookie", price: "0.003", image: "DreamjellyCookie.jpg", rarity: "Epic" },
-    { id: 14, name: "Moonlight Cookie", price: "0.002", image: "MoonlightCookie.jpg", rarity: "Legendary" },
-    { id: 15, name: "Dark Enchantress Cookie", price: "0.002", image: "DarkEnchantressCookie.jpg", rarity: "Legendary" }
+    { id: 0, name: "GingerBrave", image: "Cookie_gingerbrave_card.webp", rarity: "Common" },
+    { id: 1, name: "Pancake Cookie", image: "PancakeCookie.jpg", rarity: "Epic" },
+    { id: 2, name: "Matcha Cookie", image: "MatchaCookie.jpg", rarity: "Epic" },
+    { id: 3, name: "Strawberry Crepe Cookie", image: "StrawberryCrepeCookie.jpg", rarity: "Epic" },
+    { id: 4, name: "Sugar Swan Cookie", image: "SugarSwanCookie.jpg", rarity: "Legendary" },
+    { id: 5, name: "Blue Slushy Cookie", image: "BlueSlushyCookie.jpg", rarity: "Epic" },
+    { id: 6, name: "Fire Spirit Cookie", image: "FireSpiritCookie.jpg", rarity: "Legendary" },
+    { id: 7, name: "Dreamweaver Cookie", image: "DreamweaverCookie.jpg", rarity: "Legendary" },
+    { id: 8, name: "Beet Cookie", image: "BeetCookie.jpg", rarity: "Epic" },
+    { id: 9, name: "Wind Archer Cookie", image: "WindArcherCookie.jpg", rarity: "Legendary" },
+    { id: 10, name: "Butterbear Cookie", image: "ButterbearCookie.jpg", rarity: "Epic" },
+    { id: 11, name: "Angel Cookie", image: "AngelCookie.jpg", rarity: "Rare" },
+    { id: 12, name: "Poison Mushroom Cookie", image: "PoisonMushroomCookie.jpg", rarity: "Epic" },
+    { id: 13, name: "Dreamjelly Cookie", image: "DreamjellyCookie.jpg", rarity: "Epic" },
+    { id: 14, name: "Moonlight Cookie", image: "MoonlightCookie.jpg", rarity: "Legendary" },
+    { id: 15, name: "Dark Enchantress Cookie", image: "DarkEnchantressCookie.jpg", rarity: "Legendary" }
 ];
 
 let signer = null;
