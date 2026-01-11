@@ -11,15 +11,14 @@
     <style>
         .character-card {
             transition: transform 0.2s;
-            margin-bottom: 20px;
         }
         .character-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.5); /* Yellow/Golden shadow glow */
         }
         .card-img-top {
             height: 250px;
-            object-fit: contain; /* Changed to contain to show full character */
+            object-fit: contain;
             background-color: #f8f9fa;
             padding: 10px;
         }
@@ -70,7 +69,7 @@
         <!-- Error/Status Message Area -->
         <div id="statusMessage" class="alert d-none" role="alert"></div>
 
-        <div class="row mb-5" id="character-list">
+        <div class="row g-4 mb-5" id="character-list">
             <!-- Characters will be loaded here by JavaScript -->
             <div class="text-center">Loading characters...</div>
         </div>
