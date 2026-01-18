@@ -1,9 +1,26 @@
 import { ethers } from "https://cdnjs.cloudflare.com/ajax/libs/ethers/6.15.0/ethers.min.js";
 
-const CONTRACT_ADDRESS = "0x9b184cf9891b0c24159d6780141daa916dfc06ba"; // ใส่ที่อยู่สัญญา CharacterShop ของคุณ
+const CONTRACT_ADDRESS = "0x6eb0e3e9a07534c7a6d169a75fce8a6371947277"; // ใส่ที่อยู่สัญญา CharacterShop ของคุณ
 
-const CONTRACT_ABI = [
-    
+const CONTRACT_ABI =[
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_characterId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_tokenURI",
+				"type": "string"
+			}
+		],
+		"name": "buyCharacter",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
 	{
 		"inputs": [
 			{
@@ -47,37 +64,6 @@ const CONTRACT_ABI = [
 		"type": "event"
 	},
 	{
-		"inputs": [],
-		"name": "TOTAL_CHARACTERS",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_characterId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "_tokenURI",
-				"type": "string"
-			}
-		],
-		"name": "buyCharacter",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -116,6 +102,30 @@ const CONTRACT_ABI = [
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "hasBought",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "nftContract",
 		"outputs": [
@@ -140,9 +150,21 @@ const CONTRACT_ABI = [
 		],
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "TOTAL_CHARACTERS",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
 	}
-
-];
+]
 
 const characters = [
 
@@ -194,22 +216,27 @@ if (window.ethereum) {
 async function handleAccountsChanged(accounts) {
     if (accounts.length === 0) {
         showStatus("Please connect to MetaMask.", "warning");
+        currentAccount = null;
+        contract = null;
+        $("#userAddress").text("Not Connected");
+        renderCharacters(); // Re-render to show default state
     } else if (accounts[0] !== currentAccount) {
         currentAccount = accounts[0];
         signer = await provider.getSigner();
         const address = await signer.getAddress();
         $("#userAddress").text(`Connected: ${address.substring(0, 6)}...${address.substring(38)}`);
 
-        if (CONTRACT_ADDRESS !== "YOUR_CHARACTER_SHOP_ADDRESS") {
+        if (CONTRACT_ADDRESS && CONTRACT_ADDRESS !== "YOUR_CHARACTER_SHOP_ADDRESS") {
             contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
             loadHistory();
+            renderCharacters(); // Re-render now that we have the contract
         }
     }
 }
 
 async function load() {
-    renderCharacters();
     await loadWeb3();
+    await renderCharacters();
     updateStatus('Ready!');
 }
 
@@ -233,16 +260,32 @@ function getPriceByRarity(rarity) {
     }
 }
 
-function renderCharacters() {
+async function renderCharacters() {
     const container = $("#character-list");
     container.empty();
+
+    let ownership = [];
+    if (contract && currentAccount) {
+        // Create an array of promises for all the ownership checks
+        const ownershipPromises = characters.map(char => contract.hasBought(currentAccount, char.id));
+        // Await all promises to resolve
+        ownership = await Promise.all(ownershipPromises);
+    }
     
-    characters.forEach(char => {
+    characters.forEach((char, index) => {
         const priceETH = getPriceByRarity(char.rarity);
         const rarityClass = `rarity-${char.rarity.toLowerCase()}`;
+        const isOwned = ownership[index] || false;
+
+        let buttonHtml;
+        if (isOwned) {
+            buttonHtml = `<span class="btn btn-secondary disabled">Owned</span>`;
+        } else {
+            buttonHtml = `<button class="btn btn-primary buy-btn" data-id="${char.id}">Buy</button>`;
+        }
 
         const col = $(`
-            <div class="col-md-4">
+            <div class="col-md-4 mb-4">
                 <div class="card character-card h-100">
                     <span class="rarity-badge ${rarityClass}">${char.rarity}</span>
                     <img src="${char.image}" class="card-img-top" alt="${char.name}">
@@ -250,14 +293,16 @@ function renderCharacters() {
                         <h5 class="card-title">${char.name}</h5>
                         <div class="mt-auto d-flex justify-content-between align-items-center">
                             <span class="price-tag">${priceETH} ETH</span> 
-                            <button class="btn btn-primary buy-btn" data-id="${char.id}">Buy</button>
+                            ${buttonHtml}
                         </div>
                     </div>
                 </div>
             </div>
         `);
 
-        col.find('.buy-btn').click(() => buyCharacter(char.id));
+        if (!isOwned) {
+            col.find('.buy-btn').click(() => buyCharacter(char.id));
+        }
         container.append(col);
     });
 }

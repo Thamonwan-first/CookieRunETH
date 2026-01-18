@@ -12,6 +12,7 @@ contract CharacterShop {
     mapping(uint256 => Rarity) public characterRarities;
     
     uint256 public constant TOTAL_CHARACTERS = 16;
+    mapping(address => mapping(uint256 => bool)) public hasBought;
 
     event CharacterBought(address indexed buyer, uint256 characterId, uint256 tokenId, uint256 timestamp);
 
@@ -41,12 +42,14 @@ contract CharacterShop {
 
     function buyCharacter(uint256 _characterId, string memory _tokenURI) public payable {
         require(_characterId < TOTAL_CHARACTERS, "Invalid character ID");
+        require(!hasBought[msg.sender][_characterId], "You have already bought this character");
         
         Rarity rarity = characterRarities[_characterId];
         uint256 price = getPrice(rarity);
 
         require(msg.value >= price, "Insufficient Ether sent");
 
+        hasBought[msg.sender][_characterId] = true;
         uint256 tokenId = nftContract.mint(msg.sender, _tokenURI);
 
         emit CharacterBought(msg.sender, _characterId, tokenId, block.timestamp);
