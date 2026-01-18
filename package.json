@@ -1,0 +1,23 @@
+{
+  "name": "cookieerun",
+  "version": "1.0.0",
+  "description": "This is a decentralized application (DApp) that allows users to purchase Cookie Run characters using Ethereum (Testnet).",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Thamonwan-first/CookieRunETH.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Thamonwan-first/CookieRunETH/issues"
+  },
+  "homepage": "https://github.com/Thamonwan-first/CookieRunETH#readme",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0"
+  }
+}

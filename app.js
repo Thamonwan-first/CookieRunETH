@@ -1,31 +1,167 @@
 import { ethers } from "https://cdnjs.cloudflare.com/ajax/libs/ethers/6.15.0/ethers.min.js";
 
-const CONTRACT_ADDRESS = "0xeF009018F4bAAbC121deFAd770E2E2990b751036"; // ใส่ที่อยู่สัญญาของคุณ
+const CONTRACT_ADDRESS = "0x9b184cf9891b0c24159d6780141daa916dfc06ba"; // ใส่ที่อยู่สัญญา CharacterShop ของคุณ
 
 const CONTRACT_ABI = [
-    "function buyCharacter(uint256 _characterId) public payable",
-    "function getPurchases() public view returns (tuple(address buyer, uint256 characterId, uint256 timestamp)[])",
-    "event CharacterBought(address indexed buyer, uint256 characterId, uint256 timestamp)"
+    
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_nftContractAddress",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "buyer",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "characterId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "CharacterBought",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "TOTAL_CHARACTERS",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_characterId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_tokenURI",
+				"type": "string"
+			}
+		],
+		"name": "buyCharacter",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "characterRarities",
+		"outputs": [
+			{
+				"internalType": "enum CharacterShop.Rarity",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "enum CharacterShop.Rarity",
+				"name": "_rarity",
+				"type": "uint8"
+			}
+		],
+		"name": "getPrice",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "nftContract",
+		"outputs": [
+			{
+				"internalType": "contract CharacterNFT",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+
 ];
 
 const characters = [
 
-    { id: 0, name: "GingerBrave", image: "Cookie_gingerbrave_card.webp", rarity: "Common" },
-    { id: 1, name: "Pancake Cookie", image: "PancakeCookie.jpg", rarity: "Epic" },
-    { id: 2, name: "Matcha Cookie", image: "MatchaCookie.jpg", rarity: "Epic" },
-    { id: 3, name: "Strawberry Crepe Cookie", image: "StrawberryCrepeCookie.jpg", rarity: "Epic" },
-    { id: 4, name: "Sugar Swan Cookie", image: "SugarSwanCookie.jpg", rarity: "Legendary" },
-    { id: 5, name: "Blue Slushy Cookie", image: "BlueSlushyCookie.jpg", rarity: "Epic" },
-    { id: 6, name: "Fire Spirit Cookie", image: "FireSpiritCookie.jpg", rarity: "Legendary" },
-    { id: 7, name: "Dreamweaver Cookie", image: "DreamweaverCookie.jpg", rarity: "Legendary" },
-    { id: 8, name: "Beet Cookie", image: "BeetCookie.jpg", rarity: "Epic" },
-    { id: 9, name: "Wind Archer Cookie", image: "WindArcherCookie.jpg", rarity: "Legendary" },
-    { id: 10, name: "Butterbear Cookie", image: "ButterbearCookie.jpg", rarity: "Epic" },
-    { id: 11, name: "Angel Cookie", image: "AngelCookie.jpg", rarity: "Rare" },
-    { id: 12, name: "Poison Mushroom Cookie", image: "PoisonMushroomCookie.jpg", rarity: "Epic" },
-    { id: 13, name: "Dreamjelly Cookie", image: "DreamjellyCookie.jpg", rarity: "Epic" },
-    { id: 14, name: "Moonlight Cookie", image: "MoonlightCookie.jpg", rarity: "Legendary" },
-    { id: 15, name: "Dark Enchantress Cookie", image: "DarkEnchantressCookie.jpg", rarity: "Legendary" }
+    { id: 0, name: "GingerBrave", image: "images/Cookie_gingerbrave_card.webp", rarity: "Common" },
+    { id: 1, name: "Pancake Cookie", image: "images/PancakeCookie.jpg", rarity: "Epic" },
+    { id: 2, name: "Matcha Cookie", image: "images/MatchaCookie.jpg", rarity: "Epic" },
+    { id: 3, name: "Strawberry Crepe Cookie", image: "images/StrawberryCrepeCookie.jpg", rarity: "Epic" },
+    { id: 4, name: "Sugar Swan Cookie", image: "images/SugarSwanCookie.jpg", rarity: "Legendary" },
+    { id: 5, name: "Blue Slushy Cookie", image: "images/BlueSlushyCookie.jpg", rarity: "Epic" },
+    { id: 6, name: "Fire Spirit Cookie", image: "images/FireSpiritCookie.jpg", rarity: "Legendary" },
+    { id: 7, name: "Dreamweaver Cookie", image: "images/DreamweaverCookie.jpg", rarity: "Legendary" },
+    { id: 8, name: "Beet Cookie", image: "images/BeetCookie.jpg", rarity: "Epic" },
+    { id: 9, name: "Wind Archer Cookie", image: "images/WindArcherCookie.jpg", rarity: "Legendary" },
+    { id: 10, name: "Butterbear Cookie", image: "images/ButterbearCookie.jpg", rarity: "Epic" },
+    { id: 11, name: "Angel Cookie", image: "images/AngelCookie.jpg", rarity: "Rare" },
+    { id: 12, name: "Poison Mushroom Cookie", image: "images/PoisonMushroomCookie.jpg", rarity: "Epic" },
+    { id: 13, name: "Dreamjelly Cookie", image: "images/DreamjellyCookie.jpg", rarity: "Epic" },
+    { id: 14, name: "Moonlight Cookie", image: "images/MoonlightCookie.jpg", rarity: "Legendary" },
+    { id: 15, name: "Dark Enchantress Cookie", image: "images/DarkEnchantressCookie.jpg", rarity: "Legendary" }
 ];
 
 let signer = null;
@@ -64,7 +200,7 @@ async function handleAccountsChanged(accounts) {
         const address = await signer.getAddress();
         $("#userAddress").text(`Connected: ${address.substring(0, 6)}...${address.substring(38)}`);
 
-        if (CONTRACT_ADDRESS !== "YOUR_CONTRACT_ADDRESS_HERE") {
+        if (CONTRACT_ADDRESS !== "YOUR_CHARACTER_SHOP_ADDRESS") {
             contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
             loadHistory();
         }
@@ -126,6 +262,21 @@ function renderCharacters() {
     });
 }
 
+function createTokenUri(character) {
+    const metadata = {
+        name: character.name,
+        description: `A ${character.rarity} character from CookieeRun.`,
+        image: `${window.location.origin}/${character.image}`,
+        attributes: [
+            {
+                trait_type: "Rarity",
+                value: character.rarity
+            }
+        ]
+    };
+    return `data:application/json;base64,${btoa(JSON.stringify(metadata))}`;
+}
+
 async function buyCharacter(id) {
     if (!contract) {
         alert("Please connect wallet first!");
@@ -135,8 +286,9 @@ async function buyCharacter(id) {
     const char = characters.find(c => c.id === id);
     try {
         const priceString = getPriceByRarity(char.rarity);
-        const amount = ethers.parseEther(priceString); // v6 ใช้ ethers.parseEther
-        const tx = await contract.buyCharacter(id, { value: amount });
+        const amount = ethers.parseEther(priceString);
+        const tokenURI = createTokenUri(char);
+        const tx = await contract.buyCharacter(id, tokenURI, { value: amount });
         
         showStatus(`Transaction Sent: ${tx.hash}`, "info");
         await tx.wait();
@@ -151,18 +303,20 @@ async function buyCharacter(id) {
 async function loadHistory() {
     if (!contract) return;
     try {
-        const purchases = await contract.getPurchases();
+        const filter = contract.filters.CharacterBought();
+        const events = await contract.queryFilter(filter);
         const tbody = $("#history-table-body");
         tbody.empty();
         
-        [...purchases].reverse().forEach((p, index) => {
-            const char = characters.find(c => c.id === Number(p.characterId)); // v6 ใช้ Number()
-            const date = new Date(Number(p.timestamp) * 1000).toLocaleString();
+        [...events].reverse().forEach((event, index) => {
+            const char = characters.find(c => c.id === Number(event.args.characterId));
+            const date = new Date(Number(event.args.timestamp) * 1000).toLocaleString();
             tbody.append(`
                 <tr>
-                    <td>${purchases.length - index}</td>
-                    <td>${p.buyer}</td>
+                    <td>${events.length - index}</td>
+                    <td>${event.args.buyer}</td>
                     <td>${char ? char.name : 'Unknown'}</td>
+                    <td>${Number(event.args.tokenId)}</td>
                     <td>${date}</td>
                 </tr>
             `);

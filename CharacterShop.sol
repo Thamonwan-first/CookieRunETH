@@ -1,28 +1,23 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
+
+import "./CharacterNFT.sol";
 
 contract CharacterShop {
-
+    CharacterNFT public nftContract;
     address public owner;
 
-    struct Purchase {
-        address buyer;
-        uint256 characterId;
-        uint256 timestamp;
-    }
-
-    Purchase[] public purchases;
-    
     // Mapping from character ID to Rarity
     enum Rarity { Common, Rare, Epic, Legendary }
     mapping(uint256 => Rarity) public characterRarities;
     
     uint256 public constant TOTAL_CHARACTERS = 16;
 
-    event CharacterBought(address indexed buyer, uint256 characterId, uint256 timestamp);
+    event CharacterBought(address indexed buyer, uint256 characterId, uint256 tokenId, uint256 timestamp);
 
-    constructor() {
+    constructor(address _nftContractAddress) {
         owner = msg.sender;
+        nftContract = CharacterNFT(_nftContractAddress);
         
         // Set Epic
         uint256[8] memory epicIds = [uint256(1), 2, 3, 5, 8, 10, 12, 13];
@@ -35,8 +30,6 @@ contract CharacterShop {
         // Set Rare
         uint256[1] memory rareIds = [uint256(11)];
         for(uint i=0; i<rareIds.length; i++) characterRarities[rareIds[i]] = Rarity.Rare;
-        
-        // *ที่เหลือจะเป็น Common โดยอัตโนมัติ (ค่า Default ของ enum คือ 0)*
     }
 
     function getPrice(Rarity _rarity) public pure returns (uint256) {
@@ -46,7 +39,7 @@ contract CharacterShop {
         return 0.001 ether; // Common
     }
 
-    function buyCharacter(uint256 _characterId) public payable {
+    function buyCharacter(uint256 _characterId, string memory _tokenURI) public payable {
         require(_characterId < TOTAL_CHARACTERS, "Invalid character ID");
         
         Rarity rarity = characterRarities[_characterId];
@@ -54,20 +47,8 @@ contract CharacterShop {
 
         require(msg.value >= price, "Insufficient Ether sent");
 
-        purchases.push(Purchase({
-            buyer: msg.sender,
-            characterId: _characterId,
-            timestamp: block.timestamp
-        }));
+        uint256 tokenId = nftContract.mint(msg.sender, _tokenURI);
 
-        emit CharacterBought(msg.sender, _characterId, block.timestamp);
-    }
-
-    function getPurchases() public view returns (Purchase[] memory) {
-        return purchases;
-    }
-    
-    function getPurchaseCount() public view returns (uint256) {
-        return purchases.length;
+        emit CharacterBought(msg.sender, _characterId, tokenId, block.timestamp);
     }
 }
