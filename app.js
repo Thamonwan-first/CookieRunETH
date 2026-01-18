@@ -1,6 +1,6 @@
 import { ethers } from "https://cdnjs.cloudflare.com/ajax/libs/ethers/6.15.0/ethers.min.js";
 
-const CONTRACT_ADDRESS = "0x6eb0e3e9a07534c7a6d169a75fce8a6371947277"; // ใส่ที่อยู่สัญญา CharacterShop ของคุณ
+const CONTRACT_ADDRESS = "0xa08896e1f488398cc67fe0585361ecaae2c953b6"; // ใส่ที่อยู่สัญญา CharacterShop ของคุณ
 
 const CONTRACT_ABI =[
 	{
@@ -71,6 +71,25 @@ const CONTRACT_ABI =[
 				"type": "uint256"
 			}
 		],
+		"name": "characterIsSold",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
 		"name": "characterRarities",
 		"outputs": [
 			{
@@ -104,17 +123,12 @@ const CONTRACT_ABI =[
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			},
-			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "_characterId",
 				"type": "uint256"
 			}
 		],
-		"name": "hasBought",
+		"name": "isCharacterSold",
 		"outputs": [
 			{
 				"internalType": "bool",
@@ -236,7 +250,8 @@ async function handleAccountsChanged(accounts) {
 
 async function load() {
     await loadWeb3();
-    await renderCharacters();
+    // renderCharacters จะถูกเรียกใน handleAccountsChanged แล้ว
+    // ไม่ต้องเรียกซ้ำอีก
     updateStatus('Ready!');
 }
 
@@ -264,22 +279,22 @@ async function renderCharacters() {
     const container = $("#character-list");
     container.empty();
 
-    let ownership = [];
-    if (contract && currentAccount) {
+    let soldStatus = [];
+    if (contract) { // We don't need currentAccount anymore for this check
         // Create an array of promises for all the ownership checks
-        const ownershipPromises = characters.map(char => contract.hasBought(currentAccount, char.id));
+        const soldPromises = characters.map(char => contract.characterIsSold(char.id));
         // Await all promises to resolve
-        ownership = await Promise.all(ownershipPromises);
+        soldStatus = await Promise.all(soldPromises);
     }
     
     characters.forEach((char, index) => {
         const priceETH = getPriceByRarity(char.rarity);
         const rarityClass = `rarity-${char.rarity.toLowerCase()}`;
-        const isOwned = ownership[index] || false;
+        const isSold = soldStatus[index] || false;
 
         let buttonHtml;
-        if (isOwned) {
-            buttonHtml = `<span class="btn btn-secondary disabled">Owned</span>`;
+        if (isSold) {
+            buttonHtml = `<span class="btn btn-danger disabled">Sold Out</span>`;
         } else {
             buttonHtml = `<button class="btn btn-primary buy-btn" data-id="${char.id}">Buy</button>`;
         }
@@ -300,7 +315,7 @@ async function renderCharacters() {
             </div>
         `);
 
-        if (!isOwned) {
+        if (!isSold) {
             col.find('.buy-btn').click(() => buyCharacter(char.id));
         }
         container.append(col);
@@ -339,6 +354,7 @@ async function buyCharacter(id) {
         await tx.wait();
         showStatus(`✅ Successfully bought ${char.name}!`, "success");
         loadHistory();
+        renderCharacters(); // Re-render to update sold status
     } catch (error) {
         console.error(error);
         showStatus("Error: " + (error.reason || error.message), "danger");
